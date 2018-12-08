@@ -2,7 +2,7 @@
 
 httpScan is a very simple CLI app which accepts a URL and print some Meta data from it, like the headers or the time the URL took to respond.
 
-To execute, just type in your CLI: httpScan http://domain-to-scan.com
+To execute, just type in your CLI the command and the URL to scan, like: httpScan https://tool-seo.com
 
 ### Download and Install
 

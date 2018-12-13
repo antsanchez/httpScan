@@ -15,7 +15,9 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -28,11 +30,17 @@ func main() {
 	doAndPrintRequest(os.Args[1])
 }
 
-func doAndPrintRequest(url string) {
+func doAndPrintRequest(domain string) {
 
 	start := time.Now()
 
-	res, err := http.Get(url)
+	res, err := http.Get(domain)
+	check(err)
+
+	host, err := url.Parse(domain)
+	check(err)
+
+	ips, err := net.LookupIP(host.Host)
 	check(err)
 
 	elapsed := time.Now().Sub(start)
@@ -41,9 +49,21 @@ func doAndPrintRequest(url string) {
 
 	fmt.Println("")
 
+	ipv4 := ""
+	if len(ips) > 0 {
+		ipv4 = ips[0].String()
+	}
+
+	ipv6 := ""
+	if len(ips) > 1 {
+		ipv6 = ips[1].String()
+	}
+
 	// Request Info
 	table := tablewriter.NewWriter(os.Stdout)
-	table.Append([]string{"URL", url})
+	table.Append([]string{"domain", domain})
+	table.Append([]string{"IPv4", ipv4})
+	table.Append([]string{"IPv6", ipv6})
 	table.Append([]string{"Time", elapsed.String()})
 	table.Append([]string{"Status", res.Status})
 	table.Append([]string{"Protocol", res.Proto})

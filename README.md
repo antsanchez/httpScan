@@ -6,10 +6,6 @@ To execute, just type in your CLI the command and the URL to scan, like: httpSca
 
 ### Download and Install
 
-#### Binary Distributions
-
-You can download the binaries for Linux, Windows and Mac that you will find under the binaries folder. 
-
 #### Install From Source
 
 Just download and compile it as any other standard Go software. More info about Go: https://golang.org/

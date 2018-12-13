@@ -49,21 +49,14 @@ func doAndPrintRequest(domain string) {
 
 	fmt.Println("")
 
-	ipv4 := ""
-	if len(ips) > 0 {
-		ipv4 = ips[0].String()
-	}
-
-	ipv6 := ""
-	if len(ips) > 1 {
-		ipv6 = ips[1].String()
-	}
-
 	// Request Info
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Append([]string{"domain", domain})
-	table.Append([]string{"IPv4", ipv4})
-	table.Append([]string{"IPv6", ipv6})
+
+	for _, ip := range ips {
+		table.Append([]string{"IP", ip.String()})
+	}
+
 	table.Append([]string{"Time", elapsed.String()})
 	table.Append([]string{"Status", res.Status})
 	table.Append([]string{"Protocol", res.Proto})

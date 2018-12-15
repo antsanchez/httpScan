@@ -14,82 +14,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"net"
-	"net/http"
-	"net/url"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/antsanchez/httpScan/functions"
 )
 
 func main() {
-	doAndPrintRequest(os.Args[1])
-}
 
-func doAndPrintRequest(domain string) {
+	domain := flag.String("u", "", "URL to scan")
+	times := flag.Int("n", 1, "Number of times to do the request")
 
-	start := time.Now()
+	flag.Parse()
 
-	res, err := http.Get(domain)
-	check(err)
-
-	host, err := url.Parse(domain)
-	check(err)
-
-	ips, err := net.LookupIP(host.Host)
-	check(err)
-
-	elapsed := time.Now().Sub(start)
-
-	defer res.Body.Close()
-
-	fmt.Println("")
-
-	// Request Info
-	table := tablewriter.NewWriter(os.Stdout)
-	table.Append([]string{"domain", domain})
-
-	for _, ip := range ips {
-		table.Append([]string{"IP", ip.String()})
+	if len(*domain) == 0 {
+		fmt.Println("You need to indicate at least the URL to scan")
+		flag.PrintDefaults()
+		return
 	}
 
-	table.Append([]string{"Time", elapsed.String()})
-	table.Append([]string{"Status", res.Status})
-	table.Append([]string{"Protocol", res.Proto})
-	table.Append([]string{"Compressed", strconv.FormatBool(res.Uncompressed)})
-	table.SetHeader([]string{"Action / Header", "Value"})
+	info := functions.GetInfo(*domain, *times)
 
-	// Header Info
-	setcookie := ""
-	for i, val := range res.Header {
-		if strings.Compare(i, "Set-Cookie") == 0 {
-			setcookie = strings.Join(val, " ")
-		} else {
-			table.Append([]string{i, strings.Join(val, " ")})
-		}
-	}
-
-	table.SetHeader([]string{"Header", "Value"})
-	table.SetRowLine(true)
-	table.Render()
-
-	// Set-Cookie value ill be show separately,
-	// since it is often too long and breaks the table
-	if strings.Compare(setcookie, "") != 0 {
-		fmt.Println("Set-Cookie:")
-		fmt.Println(setcookie)
-	}
-
-	fmt.Println("")
-}
-
-func check(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	info.PrintTable()
 }

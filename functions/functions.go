@@ -2,6 +2,7 @@ package functions
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -25,6 +26,9 @@ func GetInfo(domain string, times int) (info model.HttpInfo) {
 
 	res, err := http.Get(domain)
 	check(err)
+	defer res.Body.Close()
+
+	bodyBytes, _ := ioutil.ReadAll(res.Body)
 
 	badRequests := 0
 	if res.StatusCode != 200 {
@@ -55,17 +59,15 @@ func GetInfo(domain string, times int) (info model.HttpInfo) {
 	ips, err := net.LookupIP(host.Host)
 	check(err)
 
-	defer res.Body.Close()
-
 	info.Requests = times
 	info.BadRequests = badRequests
-
 	info.URL = domain
 	info.Host = host.Host
 	info.Time = duration.String()
 	info.Status = res.Status
 	info.Protocol = res.Proto
 	info.Uncompressed = strconv.FormatBool(res.Uncompressed)
+	info.BodySize = len(bodyBytes)
 
 	for _, ip := range ips {
 		info.Ips = append(info.Ips, ip.String())

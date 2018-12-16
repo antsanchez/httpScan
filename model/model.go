@@ -20,6 +20,7 @@ type HttpInfo struct {
 	Headers      map[string][]string
 	Requests     int
 	BadRequests  int
+	BodySize     int
 }
 
 func (h *HttpInfo) PrintTable() {
@@ -44,6 +45,8 @@ func (h *HttpInfo) PrintTable() {
 	table.Append([]string{"Status", h.Status})
 	table.Append([]string{"Protocol", h.Protocol})
 	table.Append([]string{"Compressed", h.Uncompressed})
+	table.Append([]string{"Body Size", strconv.Itoa(h.BodySize) + " bytes"})
+
 	table.SetHeader([]string{"Action / Header", "Value"})
 
 	// Header Info
@@ -58,6 +61,7 @@ func (h *HttpInfo) PrintTable() {
 
 	table.SetHeader([]string{"Header", "Value"})
 	table.SetRowLine(true)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.Render()
 
 	// Set-Cookie value ill be show separately,

@@ -1,4 +1,4 @@
-# httpScan
+# What is httpscan
 
 httpScan is a very simple CLI app which accepts a URL and print some Meta data from it, like the headers or the time the URL took to respond.
 
